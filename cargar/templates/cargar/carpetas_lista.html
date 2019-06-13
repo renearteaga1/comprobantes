@@ -1,0 +1,4 @@
+<option value="anio">Seleccionar Carpeta</option>
+{% for anio in anios %}
+<option class='option-val' value="{{anio}}" data-url="{% url 'cargar:eliminar_carpeta' anio %}">{{anio}}</option>
+{% endfor %}

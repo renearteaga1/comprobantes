@@ -1,0 +1,23 @@
+<form class='delete-form' action="" method="post" data-url="{% url 'cargar:eliminar_carpeta' carpeta %}">
+
+  {% csrf_token %}
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    {% if data %}
+    <p>La carpeta <strong>{{ carpeta }} contiene datos</strong>.Esta seguro que desea eliminarla</p>
+    {% else %}
+    <p>Esta seguro que desea eliminar la carpeta <strong>{{carpeta}}</strong></p>
+    {% endif %}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+  </div>
+  <input id="tipo-documento-form" type="hidden" name="tipo_documento" value="{{ tipo_documento }}">
+
+</form>

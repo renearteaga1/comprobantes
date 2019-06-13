@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block javascript %}
+  <script>
+$(document).ready(function(){
+  $('#tipo_documento').click(function(){
+    var anio = $('#anio')
+    var tipo_documento = $('#tipo_documento')
+    var sel_url = $("#form-delete-carpeta").attr('data-url-ajax-anio')
+    anio.removeAttr("disabled");
+    $.ajax({
+      url:sel_url,
+      //type:'get',
+      data: {
+        'tipo_documento':tipo_documento.val(),
+      },
+      //dataType:'json',
+      success: function(data){
+        anio.html(data.select_anios)
+      }
+    });
+  });
+
+  $('.eliminar-btn').click(function(){
+    $("#form-delete-carpeta").submit(function(event){
+    event.preventDefault()
+
+  });
+    var anio = $('#anio')
+    var sel = $('#anio option:selected').attr('data-url');
+    console.log(sel)
+
+    $.ajax({
+      url: sel,
+      type:'get',
+      data:{
+        'tipo_documento':$('#tipo_documento').val()
+      },
+      dataType:'json',
+      beforeSend: function(){
+
+             $("#modal-example").modal('show');
+             console.log($("#modal-delete").html())
+           },
+      success: function(data){
+        console.log(data.html_data)
+        $('#modal-example .modal-content').html(data.html_data)
+      }
+    });
+  })
+  $('#modal-example').on('submit', '.delete-form', function(){
+
+    var form_url = $(this).attr('data-url');
+    var form_type = $(this).attr('method');
+    var form = $(this);
+    $('#tipo-documento-form').val($('#tipo_documento').val())
+    console.log($(this).attr('method'));
+    $.ajax({
+      url: form_url,
+      type:form_type,
+      data: form.serialize(),
+      dataType:'json',
+      success: function(data){
+        if(data.form_valid){
+          $('#anio').html(data.carpeta_lista)
+          $("#modal-example").modal('hide');
+          console.log(data.carpeta_lista)
+          console.log($('#anio'))
+
+        }else{
+          $('#modal-delete .modal-content').html(data.html_data)
+        }
+
+      }
+    });
+    return false;
+  });
+});
+
+  </script>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="">
+        <div class="alert alert-warning" role="{{ message.tags }}">
+          {{ message }}
+        </div>
+      </div>
+    {%  endfor %}
+  {% endif %}
+
+  <form id="form-delete-carpeta" class="" action="" method="post" enctype="multipart/form-data" data-url-ajax-anio="{% url 'cargar:ajax_cargar' %}">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="">Tipo de documento:</label>
+      <select id="tipo_documento" class="" name="tipo_documento">
+        <option value="">Tipo de documento</option>
+        {% for tp in tipo_documentos %}
+          <option value="{{tp}}">{{ tp }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+        <label for="">Anio:</label>
+        <select class="" name="anio" id='anio' >
+
+          {% include 'cargar/carpetas_lista.html' with anios=anios %}
+        </select>
+    </div>
+    <div class="form-group">
+
+
+      <button id="eliminar-btn" type="submit" name="button" class="btn btn-danger eliminar-btn" mmm="return confirm('Seguro desea eliminar la carpeta?')"  data-target="#exampleModal">Eliminar</button>
+    </div>
+  </form>
+
+  <hr>
+
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modal-example">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+    </div>
+  </div>
+</div>
+{% endblock %}

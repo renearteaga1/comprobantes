@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block javascript %}
+  <script>
+$(document).ready(function(){
+  $('#tipo-documento').click(function(){
+    var select_anio = $('#select-anio')
+    var select_institucion = $('#select-institucion')
+    var tipo_documento = $('#tipo-documento')
+    var sel_url = $("#carga-doc-form").attr('data-url')
+
+    $.ajax({
+      url:sel_url,
+      //type:'get',
+      data: {
+        'tipo_documento':tipo_documento.val(),
+        'select_anio':$('#select-anio option:selected').val(),
+      },
+      //dataType:'json',
+      success: function(data){
+        console.log(data.select_anios)
+        select_anio.html(data.select_anios)
+        select_institucion.html(data.select_institucion)
+      }
+    });
+
+  });
+
+});
+
+  </script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="">
+        <div class="alert alert-warning" role="{{ message.tags }}">
+          {{ message }}
+        </div>
+      </div>
+    {%  endfor %}
+  {% endif %}
+  <form id="carga-doc-form" class="" action="" method="post" enctype="multipart/form-data" data-url="{% url 'cargar:ajax_cargar' %}">
+    {% csrf_token %}
+
+    <div class="form-group col-sm-5">
+      <label for="">Tipo de documento:</label>
+      <select id="tipo-documento" class="form-control" name="tipo-documento">
+        <option value="">Tipo de documento</option>
+        {% for tp in tipo_documentos %}
+          <option value="{{tp}}">{{ tp }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group col-sm-5">
+        <label for="">Carpeta(Nombre de la institucion):</label>
+        <select id="select-anio" class="form-control" name="anio">
+          {% include 'cargar/select_anio.html' with anios=anios %}
+        </select>
+        {% if perms.cargar.delete_comprobantes %}
+        <small><u class="text-primary"><a href="{% url 'cargar:carpeta' %}" class="text-primary">Crear carpeta</a></u></small>
+        {% endif %}
+    </div>
+
+    <div class="form-group col-sm-5">
+      <label for="">Anio:</label>
+      <input type="text" class="form-control" name="nombre_carpeta" value="">
+    </div>
+
+    <div class="form-group col-sm-5" hidden>
+        <label for="">Institucion:</label>
+        <select id="select-institucion" class="form-control" name="institucion">
+          {% include 'cargar/select_institucion.html' with instituciones=instituciones %}
+        </select>
+        {% if perms.cargar.delete_comprobantes %}
+        <small><u class="text-primary"><a href="{% url 'cargar:carpeta' %}" class="text-primary">Crear carpeta</a></u></small>
+        {% endif %}
+    </div>
+
+    <button type="submit" name="button" class="btn btn-primary">Crear</button>
+  </form>
+
+
+</div>
+{% endblock %}

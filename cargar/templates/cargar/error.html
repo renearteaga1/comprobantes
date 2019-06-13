@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="">
+        {% if message.tags == 'error' %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+          </div>
+        {% else %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+        </div>
+        {% endif %}
+      </div>
+    {%  endfor %}
+  {% endif %}
+
+  <h2>Reporte de errores</h2>
+
+<!-- Reporte de cargas -->
+
+{% if errores %}
+
+<div class="mt-3 pt-3">
+  <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Archivo</th>
+      <th scope="col">Error</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for error in files_error %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{error}}</td>
+      <td>Corregir nombre del archivo ejemplo:"000001.pdf"</td>
+    </tr>
+    {% endfor %}
+    {% if existe %}
+    {% for fe in files_existe%}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{fe.descripcion}}.pdf</td>
+      <td>Ya existe un archivo del mismo anio con el mismo nombre.</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+  </tbody>
+</table>
+</div>
+
+{% endif %}
+
+{% if errores_reporte %}
+
+<div class="mt-3 pt-3">
+  <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Archivo</th>
+      <th scope="col">Error</th>
+      <th scope="col">Tipo Documento</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for error in dato_errores %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{error.archivo}}</td>
+      <td>{{error.tipo_error}}</td>
+      <td>{{error.tipo_documento}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,63 @@
+<h1>Home</h1>
+
+{% if user.is_authenticated %}
+  <p>Mi name is {{name}}</p>
+
+  <p>Los siguientes productos: </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+      </tr>
+
+    </thead>
+    <tbody>
+      {% for producto in productos %}
+      <tr>
+        <td>{{producto.nombre}}</td>
+        <td>{{producto.precio}}</td>
+      </tr>
+    {% endfor %}
+        </tbody>
+  </table>
+
+{% else %}
+
+  <p>Por favor ingrese al sistema</p>
+
+{% endif %}
+
+<br>
+<form class="" action="index.html" method="post">
+  {% csrf_token %}
+ {{ form.as_p }}
+  <button type="submit" name="button">Guardar</button>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Factura</th>
+      <th scope="col">Consumo</th>
+      <th scope="col">Saldo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% with saldo as saldo %}
+    {% for consumo in consumos %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td>{{ consumo.cliente }}</td>
+      <td>{{ consumo.factura }}</td>
+      <td>{{consumo.consumo }}</td>
+      <td>{{ consumo.saldo  }}</td>
+    </tr>
+    {% endfor %}
+    {% endwith %}
+
+  </tbody>
+</table>

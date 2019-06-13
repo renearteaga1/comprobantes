@@ -1,0 +1,53 @@
+<h1>Facturar</h1>
+
+{% if user.is_authenticated %}
+
+
+  <p>Los siguientes productos: </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+      </tr>
+
+    </thead>
+    <tbody>
+      {% for producto in productos %}
+      <tr>
+        <td>{{producto.nombre}}</td>
+        <td>{{producto.precio}}</td>
+      </tr>
+    {% endfor %}
+        </tbody>
+  </table>
+
+{% else %}
+
+  <p>Por favor ingrese al sistema</p>
+
+{% endif %}
+
+<br>
+<form class="" action="" method="post">
+  {% csrf_token %}
+  <select class="" name="cliente_id">
+    <option value="">---</option>
+    {% for cliente in clientes %}
+      <option value="{{cliente.pk}}">{{ cliente.nombre }}</option>
+    {% endfor %}
+  </select>
+<br>
+  <button type="submit" name="">Guardar</button>
+</form>
+
+<form class="" action="{% url 'sitetest:printer' %}" method="post">
+  {% csrf_token %}
+    <label>Nombre</label>
+    <input name='nombre'>
+<br>
+  <button type="submit" name="">Imprimir</button>
+</form>
+
+

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block javascript %}
+  <script>
+    $(document).ready(function(){
+      var a = $("#a")
+      var q = $("#q")
+      var t = $("#t")
+      var buscar = $("#buscar")
+      t.change(function(){
+        if ($('#t option:selected').val() == "Oficios"){
+          $("#i").removeAttr('hidden');
+        } else if ($('#t option:selected').val() != "Oficios"){
+          $("#i").attr('hidden',true);
+        }
+      });
+
+    });
+  </script>
+
+{% endblock %}
+
+<!-- <h3><a href="{% url 'cargar:index' %}">Cargar Comprobantes</a></h3> -->
+
+{% block content %}
+<div class="container">
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="">
+        <div class="alert alert-{{message.tags }}" role="{{ message.tags }}">
+          {{ message }}
+
+        </div>
+      </div>
+    {%  endfor %}
+  {% endif %}
+<div class="text-center">
+  <h1>Busqueda</h1>
+</div>
+
+<div class="my-3 text-center">
+  <form method="GET" action="{% url 'cargar:busqueda' %}">
+    <div class="form-row justify-content-center">
+      <div class="form-group col-sm-2">
+        <select id='t' class="form-control" name="t">
+          <option selected value="">Tipo</option>
+          {% for t in tipos %}
+            <option value="{{t}}">{{t}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-sm-2">
+        <select id='a' class="form-control" name="a">
+          <option selected value="">Año</option>
+          {% for anio in value_anios %}
+            <option value="{{anio}}">{{anio}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-row justify-content-center">
+      <div class="form-group col-sm-4">
+        <select id='i' class="form-control" name="i" hidden>
+          <option selected value="">Institucion</option>
+          {% for inst in instituciones %}
+            <option value="{{inst}}">{{inst}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-row justify-content-center">
+      <div class="form-group col-sm-4">
+        <input id='q' class="form-control " type="search" name="q" placeholder="Buscar" aria-label="Buscar">
+      </div>
+    </div>
+<button type="submit" id="buscar" class="btn btn-primary">Buscar</button>
+  </form>
+</div>
+
+{% if comprobantes %}
+<div class="my-3">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+
+          {% if comprobantes.has_previous %}
+          <li class="page-item {% if not comprobantes.has_previous %}disabled{%endif%}">
+            {% if query %}
+              <a class="page-link" href="?page=1{% if query %}&q={{query}}&a={{anio}}{% endif %}">Primero</a>
+            {% else %}
+              <a class="page-link" href="?page=1{% if anio %}&a={{anio}}{% endif %}">Primero</a>
+            {% endif %}
+          </li>
+          <li class="page-item {% if not comprobantes.has_previous %}disabled{%endif%}">
+            {% if query %}
+              <a class="page-link" href="?page={{ comprobantes.previous_page_number }}{% if query %}&q={{query}}&a={{anio}}{% endif %}">{{comprobantes.previous_page_number}}</a>
+            {% else %}
+              <a class="page-link" href="?page={{ comprobantes.previous_page_number }}{% if anio %}&a={{anio}}{% endif %}">{{comprobantes.previous_page_number}}</a>
+            {% endif %}
+          </li>
+          {% endif %}
+
+
+        <li class="page-item active"><a class="page-link" href="#">{{ comprobantes.number }} <span class="sr-only">(current)</span></a></li>
+
+
+          {% if comprobantes.has_next %}
+          <li class="page-item {% if not comprobantes.has_next %}disabled{%endif%}">
+            {% if query %}
+              <a class="page-link"href="?page={{ comprobantes.next_page_number }}{% if query %}&q={{query}}&a={{anio}}{% endif %}">{{ comprobantes.next_page_number }}</a>
+              <!-- <a class="page-link"href="?page={{ comprobantes.next_page_number|add:'1' }}{% if query %}&q={{query}}&a={{anio}}{% endif %}">{{ comprobantes.next_page_number|add:"1" }}</a> -->
+            {% else %}
+              <a class="page-link"href="?page={{ comprobantes.next_page_number }}{% if anio %}&a={{anio}}{% endif %}">{{ comprobantes.next_page_number }}</a>
+            {% endif %}
+          </li>
+          <li class="page-item {% if not comprobantes.has_next %}disabled{%endif%}">
+            {% if query %}
+              <a class="page-link"href="?page={{ comprobantes.paginator.num_pages }}{% if query %}&q={{query}}&a={{anio}}{% endif %}">Ultimo</a>
+            {% else %}
+              <a class="page-link"href="?page={{ comprobantes.paginator.num_pages }}{% if anio %}&a={{anio}}{% endif %}">Ultimo</a>
+            {% endif %}
+          </li>
+          {% endif %}
+      </ul>
+    </nav>
+
+</div>
+<div class="row my-2">
+  <table class='table'>
+    <thead>
+      <tr>
+        <th>Descripcion</th>
+        {% if oficio %}
+        <th>Institucion</th>
+        {% endif %}
+        <th>Visualizar</th>
+        {% if user.is_authenticated and perms.cargar.delete_comprobantes %}<th>Borrar</th>{%endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for comprobante in comprobantes %}
+      <tr>
+        <td>{{ comprobante.descripcion }}</td>
+        {% if comprobante.institucion %}
+        <td>{{ comprobante.institucion }}</td>
+        {% endif %}
+        <td> <a href="{{comprobante.archivo.url}}" target="_blank"> Visualizar</a>
+        </td>
+        {% if user.is_authenticated and perms.cargar.delete_comprobantes %}
+        <td>
+          <form class="" action="{% url 'cargar:comprobante_eliminar' comprobante.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" name="button" onclick="return confirm('Esta seguro de eliminar el registro?')">Eliminar</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif  %}
+
+</div>
+
+{% endblock %}
