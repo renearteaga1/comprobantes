@@ -40,6 +40,7 @@ $(document).ready(function(){
       //$(".oficio-files").attr('hidden',true);
       $(".comprobante-files").removeAttr('hidden');
       $("#anios").removeAttr('hidden');
+      $("#descripcion").removeAttr('required');
       $("#oficios").attr('hidden',true);
       $("#label-oficios-institucion").html("Anio:")
     }
@@ -191,7 +192,7 @@ $(document).ready(function(){
     </div>
     <div class="form-group col-sm-3">
         <label for="">Descripcion:</label>
-        <textarea id="descripcion" class="form-control" name="descripcion" rows="3"></textarea>
+        <textarea id="descripcion" class="form-control" name="descripcion" rows="3" required></textarea>
     </div>
 
   </div>

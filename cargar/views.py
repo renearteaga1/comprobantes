@@ -16,7 +16,7 @@ from weasyprint import HTML, CSS
 
 from .models import Comprobante, ConteoComprobante, ErrorCarga, Oficio
 from .forms import ComprobanteForm, CrearCarpetaForm
-
+from .lista_notas0 import *
 # Create your views here.
 #user = User
 def update(request):
@@ -39,102 +39,110 @@ def update(request):
     path_subir = os.path.join(tp, str(carpeta))
     instance_conteo = ConteoComprobante(usuario=request.user, conteo=len(documentos), tipo_documento=tp)
     instance_conteo.save()
+
+    documentos = lista_doc
+    print(len(documentos))
     for f in documentos:
-        file = str(f)
-        filename, ext = file.split('.pdf')
         if tp == "Oficios":
-            #VIEW IF CARGA SON Oficios
-            carpeta = request.POST['institucion']
-            institucion = request.POST['anio']
-            respuesta = request.POST['respuesta']
-            entrante = request.POST['entrante']
-            descripcion = request.POST['descripcion']
-            instance_conteo = ConteoComprobante(usuario=request.user, conteo=len(files), tipo_documento=tp)
-            instance_conteo.save()
-            for f in files:
-                file = str(f)
-                path_2 = os.path.join(path, str(tp))
-                path_3 = os.path.join(path_2, carpeta)
-                path_4 = os.path.join(path_3, institucion)
-                print('pahtt3')
-                print(path_3)
-                print(path_4)
-
-                filename, ext = file.split('.pdf')
-                if not file.lower().endswith('.pdf'):
-                    messages.warning(request, 'Archivo seleccionado no es pdf')
-                    files.sort(reverse = True)
-                    context = {
-                        'carpetas':files,
-                        'anios':files_1,
-                        'tipo_documentos':tipo_documentos
-                    }
-                    return render(request, 'cargar/model_form_upload.html', context)
-                elif carpeta == "" or carpeta == None:
-                    messages.warning(request, 'Seleccione el año del documento')
-                    return render(request, 'cargar/model_form_upload.html', context)
-                else:
-                    if len(filename) < 1:
-                        files_error.append(filename+".pdf")
-                        errores = True
-                        instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error="Nombre archivo incorrecto", tipo_documento=tp)
-                        instance_errores.save()
-                        continue
-
-                    try:
-                        try:
-                            existe = Oficio.objects.get(anio=carpeta, descripcion=filename, tipo=tp, institucion=institucion)
-                        except:
-                            existe = Oficio.objects.filter(anio=carpeta, descripcion=filename, tipo=tp, institucion=institucion)
-                        if existe:
-                            errores = True
-                            existe_file = True
-                            files_existe.append(existe)
-                            error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
-                            instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
-                            instance_errores.save()
-                        else:
-                            instance = Oficio(archivo=f, anio=carpeta, descripcion=descripcion, respuesta=respuesta, entrante=entrante, institucion=institucion, usuario=request.user, conteo_id=instance_conteo, tipo=tp)
-                            instance.save()
-                            i = i + 1
-                            exitosa = True
-                    except:
-                        instance = Oficio(comprobante=f, anio=carpeta, descripcion=descripcion, respuesta=respuesta, entrante=entrante,institucion=institucion, usuario=request.user, conteo_id=instance_conteo, tipo=tp)
-                        instance.save()
-                        i = i + 1
-                        exitosa = True
-
-            if exitosa and i == len(files):
-                instance_errores = ErrorCarga(conteo_id=instance_conteo)
-                instance_errores.save()
-                if int(i) > 1:
-                    messages.success(request, "Carga exitosa de %i archivos" %i)
-                else:
-                    messages.success(request, "Carga exitosa de %i archivo" %i)
-            elif errores or not i == len(files):
-                if i > 0:
-                    messages.success(request, "Carga exitosa de %i archivos" %i)
-                    messages.error(request, "%i archivos no fueros cargados" %(len(files)-i))
-                else:
-                    messages.error(request, "%i archivos no fueros cargados" %(len(files)-i))
-                instance_conteo.conteo = i
-                instance_conteo.errores = int((len(files)-i))
-                instance_conteo.save()
-                context = {
-                    'carpetas':files,
-                    'anios':files,
-                    'tipo_documentos':tipo_documentos,
-                    'errores': errores,
-                    'files_error':files_error,
-                    'existe':existe,
-                    'existe_file':existe_file,
-                    'files_existe':files_existe,
-                }
-                return render(request, 'cargar/error.html', context)
-
-            return redirect('cargar:comprobante_list')
-            print('oficioss')
+            pass
+        #     #VIEW IF CARGA SON Oficios
+        #     carpeta = request.POST['institucion']
+        #     institucion = request.POST['anio']
+        #     respuesta = request.POST['respuesta']
+        #     entrante = request.POST['entrante']
+        #     descripcion = request.POST['descripcion']
+        #     instance_conteo = ConteoComprobante(usuario=request.user, conteo=len(files), tipo_documento=tp)
+        #     instance_conteo.save()
+        #     for f in files:
+        #         file = str(f)
+        #         path_2 = os.path.join(path, str(tp))
+        #         path_3 = os.path.join(path_2, carpeta)
+        #         path_4 = os.path.join(path_3, institucion)
+        #         print('pahtt3')
+        #         print(path_3)
+        #         print(path_4)
+        #
+        #         filename, ext = file.split('.pdf')
+        #         if not file.lower().endswith('.pdf'):
+        #             messages.warning(request, 'Archivo seleccionado no es pdf')
+        #             files.sort(reverse = True)
+        #             context = {
+        #                 'carpetas':files,
+        #                 'anios':files_1,
+        #                 'tipo_documentos':tipo_documentos
+        #             }
+        #             return render(request, 'cargar/model_form_upload.html', context)
+        #         elif carpeta == "" or carpeta == None:
+        #             messages.warning(request, 'Seleccione el año del documento')
+        #             return render(request, 'cargar/model_form_upload.html', context)
+        #         else:
+        #             if len(filename) < 1:
+        #                 files_error.append(filename+".pdf")
+        #                 errores = True
+        #                 instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error="Nombre archivo incorrecto", tipo_documento=tp)
+        #                 instance_errores.save()
+        #                 continue
+        #
+        #             try:
+        #                 try:
+        #                     existe = Oficio.objects.get(anio=carpeta, descripcion=filename, tipo=tp, institucion=institucion)
+        #                 except:
+        #                     existe = Oficio.objects.filter(anio=carpeta, descripcion=filename, tipo=tp, institucion=institucion)
+        #                 if existe:
+        #                     errores = True
+        #                     existe_file = True
+        #                     files_existe.append(existe)
+        #                     error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
+        #                     instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
+        #                     instance_errores.save()
+        #                 else:
+        #                     instance = Oficio(archivo=f, anio=carpeta, descripcion=descripcion, respuesta=respuesta, entrante=entrante, institucion=institucion, usuario=request.user, conteo_id=instance_conteo, tipo=tp)
+        #                     instance.save()
+        #                     i = i + 1
+        #                     exitosa = True
+        #             except:
+        #                 instance = Oficio(comprobante=f, anio=carpeta, descripcion=descripcion, respuesta=respuesta, entrante=entrante,institucion=institucion, usuario=request.user, conteo_id=instance_conteo, tipo=tp)
+        #                 instance.save()
+        #                 i = i + 1
+        #                 exitosa = True
+        #
+        #     if exitosa and i == len(files):
+        #         instance_errores = ErrorCarga(conteo_id=instance_conteo)
+        #         instance_errores.save()
+        #         if int(i) > 1:
+        #             messages.success(request, "Carga exitosa de %i archivos" %i)
+        #         else:
+        #             messages.success(request, "Carga exitosa de %i archivo" %i)
+        #     elif errores or not i == len(files):
+        #         if i > 0:
+        #             messages.success(request, "Carga exitosa de %i archivos" %i)
+        #             messages.error(request, "%i archivos no fueros cargados" %(len(files)-i))
+        #         else:
+        #             messages.error(request, "%i archivos no fueros cargados" %(len(files)-i))
+        #         instance_conteo.conteo = i
+        #         instance_conteo.errores = int((len(files)-i))
+        #         instance_conteo.save()
+        #         context = {
+        #             'carpetas':files,
+        #             'anios':files,
+        #             'tipo_documentos':tipo_documentos,
+        #             'errores': errores,
+        #             'files_error':files_error,
+        #             'existe':existe,
+        #             'existe_file':existe_file,
+        #             'files_existe':files_existe,
+        #         }
+        #         return render(request, 'cargar/error.html', context)
+        #
+        #     return redirect('cargar:comprobante_list')
+        #     print('oficioss')
         else:
+            filename = f['filename']
+            print(filename)
+            carpeta = int(f['carpeta'])
+            numero_comprobante = f['numero_comprobante']
+            tp = f['tp']
+            f = f['f']
             #VIEW IF CARGA SON COMPROBANTES O NI
             if not len(filename) == 6:
                 files_error.append(filename+".pdf")
@@ -142,28 +150,24 @@ def update(request):
                 instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error="Nombre archivo incorrecto", tipo_documento=tp)
                 instance_errores.save()
                 continue
+
             try:
-                try:
-                    existe = Comprobante.objects.get(anio=carpeta, descripcion=filename, tipo=tp)
-                except:
-                    existe = Comprobante.objects.filter(anio=carpeta, descripcion=filename, tipo=tp)
-                if existe:
-                    errores = True
-                    existe_file = True
-                    files_existe.append(existe)
-                    error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
-                    instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
-                    instance_errores.save()
-                else:
-                    instance = Comprobante(archivo=f, anio=carpeta, descripcion=filename, numero_comprobante=int(filename), usuario=request.user, conteo_id=instance_conteo, tipo=tp)
-                    instance.save()
-                    i = i + 1
-                    exitosa = True
+                existe = Comprobante.objects.get(anio=carpeta, descripcion=filename, tipo=tp)
             except:
-                instance = Comprobante(archivo=os.path.join(path_subir, f), anio=carpeta, descripcion=filename, numero_comprobante=int(filename), usuario=request.user, conteo_id=instance_conteo, tipo=tp)
+                existe = Comprobante.objects.filter(anio=carpeta, descripcion=filename, tipo=tp)
+            if existe:
+                errores = True
+                existe_file = True
+                files_existe.append(existe)
+                error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
+                instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
+                instance_errores.save()
+            else:
+                instance = Comprobante(archivo=os.path.join(path_subir,f), anio=carpeta, descripcion=filename, numero_comprobante=int(filename), usuario=request.user, conteo_id=instance_conteo, tipo=tp)
                 instance.save()
                 i = i + 1
                 exitosa = True
+
     if exitosa and i == len(documentos):
         instance_errores = ErrorCarga(conteo_id=instance_conteo)
         instance_errores.save()
@@ -191,7 +195,6 @@ def update(request):
         return render(request, 'cargar/error.html', context)
 
     return redirect('cargar:comprobante_list')
-
 
 @login_required(login_url='/login/')
 @permission_required(('cargar.view_comprobantes','cargar.add_comprobantes'), raise_exception=True)
@@ -254,24 +257,19 @@ def model_form_upload(request):
                         continue
 
                     try:
-                        try:
-                            existe = Oficio.objects.get(anio=carpeta, descripcion=filename, tipo=tp, institucion=institucion)
-                        except:
-                            existe = Oficio.objects.filter(anio=carpeta, descripcion=filename, tipo=tp, institucion=institucion)
-                        if existe:
-                            errores = True
-                            existe_file = True
-                            files_existe.append(existe)
-                            error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
-                            instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
-                            instance_errores.save()
-                        else:
-                            instance = Oficio(archivo=f, anio=carpeta, descripcion=descripcion, respuesta=respuesta, entrante=entrante, institucion=institucion, usuario=request.user, conteo_id=instance_conteo, tipo=tp)
-                            instance.save()
-                            i = i + 1
-                            exitosa = True
+                        existe = Oficio.objects.get(anio=carpeta, nombre=filename, tipo=tp, institucion=institucion)
                     except:
-                        instance = Oficio(comprobante=f, anio=carpeta, descripcion=descripcion, respuesta=respuesta, entrante=entrante,institucion=institucion, usuario=request.user, conteo_id=instance_conteo, tipo=tp)
+                        existe = Oficio.objects.filter(anio=carpeta, nombre=filename, tipo=tp, institucion=institucion)
+                    if existe:
+                        print('Existeeee')
+                        errores = True
+                        existe_file = True
+                        files_existe.append(existe)
+                        error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
+                        instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
+                        instance_errores.save()
+                    else:
+                        instance = Oficio(archivo=f, anio=carpeta, descripcion=descripcion, nombre=filename, respuesta=respuesta, entrante=entrante, institucion=institucion, usuario=request.user, conteo_id=instance_conteo, tipo=tp)
                         instance.save()
                         i = i + 1
                         exitosa = True
@@ -349,27 +347,22 @@ def model_form_upload(request):
                         continue
 
                     try:
-                        try:
-                            existe = Comprobante.objects.get(anio=carpeta, descripcion=filename, tipo=tp)
-                        except:
-                            existe = Comprobante.objects.filter(anio=carpeta, descripcion=filename, tipo=tp)
-                        if existe:
-                            errores = True
-                            existe_file = True
-                            files_existe.append(existe)
-                            error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
-                            instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
-                            instance_errores.save()
-                        else:
-                            instance = Comprobante(archivo=f, anio=carpeta, descripcion=filename, numero_comprobante=int(filename), usuario=request.user, conteo_id=instance_conteo, tipo=tp)
-                            instance.save()
-                            i = i + 1
-                            exitosa = True
+                        existe = Comprobante.objects.get(anio=carpeta, descripcion=filename, tipo=tp)
                     except:
+                        existe = Comprobante.objects.filter(anio=carpeta, descripcion=filename, tipo=tp)
+                    if existe:
+                        errores = True
+                        existe_file = True
+                        files_existe.append(existe)
+                        error = str("Ya existe un archivo con el mismo nombre en carpeta %s, del anio %s" %(tp,carpeta))
+                        instance_errores = ErrorCarga(conteo_id=instance_conteo, archivo = str(filename+".pdf"), tipo_error=error, tipo_documento=tp)
+                        instance_errores.save()
+                    else:
                         instance = Comprobante(archivo=f, anio=carpeta, descripcion=filename, numero_comprobante=int(filename), usuario=request.user, conteo_id=instance_conteo, tipo=tp)
                         instance.save()
                         i = i + 1
                         exitosa = True
+
             print(errores)
             if exitosa and i == len(files):
                 instance_errores = ErrorCarga(conteo_id=instance_conteo)
@@ -492,8 +485,12 @@ def comprobante_list(request):
 
 def eliminar(request, pk):
     if request.method == 'POST':
-        comprobante = Comprobante.objects.get(pk=pk)
-        comprobante.delete()
+        try:
+            comprobante = Comprobante.objects.get(pk=pk)
+            comprobante.delete()
+        except:
+            comprobante = Oficio.objects.get(pk=pk)
+            comprobante.delete()
     return redirect(request.META['HTTP_REFERER'])
 
 # def nueva_carpeta(request,y):

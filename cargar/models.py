@@ -48,6 +48,7 @@ class Comprobante(models.Model):
 class Oficio(models.Model):
     descripcion = models.CharField(max_length=255, blank=True)
     archivo = models.FileField(upload_to=oficio_directory_path)
+    nombre = models.CharField(max_length=255, blank=True)
     tipo = models.CharField(max_length=255, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     anio = models.IntegerField(blank=True, null=True)
